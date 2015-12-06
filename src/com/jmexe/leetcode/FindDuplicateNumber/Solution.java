@@ -6,63 +6,33 @@ package com.jmexe.leetcode.FindDuplicateNumber;
  * Difficulty - Hard
  */
 public class Solution {
-    //TODO optimize
     public static int findDuplicate(int[] nums) {
-        int len = nums.length;
+        int slow = 0;
+        int fast = 0;
+        int finder = 0;
 
-        for (int i = 0; i < len; i++) {
-            int slow = nums[i] - 1;
-            int fast = nums[i] - 1;
+        //Find the loop
+        while (true)
+        {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
 
-            if (nums[i] == i + 1) {
-                continue;
-            }
-
-            while (fast != i) {
-                slow = nums[slow] - 1;
-                fast = nums[fast] - 1;
-
-                if (fast != i) {
-                    fast = nums[fast] - 1;
-                }
-                else {
-                    break;
-                }
-
-                if (fast == slow) {
-                    break;
-                }
-            }
-
-            if (fast == i) {
-                continue;
-            }
-            else {
-                int pt = nums[i] - 1;
-
-                if (pt == slow) {
-                    while (nums[pt] - 1 != slow) {
-                        pt = nums[pt] - 1;
-                    }
-                }
-
-                else {
-                    while (nums[pt] != nums[slow]) {
-                        pt = nums[pt] - 1;
-                        slow = nums[slow] - 1;
-                    }
-                }
-
-                return nums[pt];
-            }
-
+            if (slow == fast)
+                break;
         }
 
-        return 0;
+        //Retrieve the duplicate number
+        while (true)
+        {
+            slow = nums[slow];
+            finder = nums[finder];
+            if (slow == finder)
+                return slow;
+        }
     }
 
     public static void main(String[] args) {
-        int[] nums = {2, 1, 1};
+        int[] nums = {1, 2, 3, 4, 5, 5};
         System.out.println(findDuplicate(nums));
     }
 }
