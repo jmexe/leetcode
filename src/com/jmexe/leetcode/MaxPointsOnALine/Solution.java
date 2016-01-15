@@ -18,61 +18,54 @@ class Point {
 
 public class Solution {
     public static int maxPoints(Point[] points) {
-        if (points.length < 2) {
-            return points.length;
-        }
-
-        Map<Float, Set<Point>> hash = new HashMap<Float, Set<Point>>();
-        Map<Integer, Set<Point>> hHash = new HashMap<Integer, Set<Point>>();
-        Map<Integer, Set<Point>> vHash = new HashMap<Integer, Set<Point>>();
         int max = 0;
+
         for (int i = 0; i < points.length; i++) {
+            Map<Float, Integer> hash = new HashMap<Float, Integer>();
+            int same = 1;
             for (int j = i + 1; j < points.length; j++) {
-                Point p1 = points[i];
-                Point p2 = points[j];
+                Point x = points[i];
+                Point y = points[j];
 
-                if (p1.x == p2.x) {
-                    if (!vHash.containsKey(p1.x)) {
-                        vHash.put(p1.x, new HashSet<Point>());
-                    }
-
-                    Set<Point> p1Set = vHash.get(p1.x);
-                    p1Set.add(p1);
-                    p1Set.add(p2);
-
-                    max = Math.max(max, p1Set.size());
+                if (x.x == y.x && x.y == y.y) {
+                    same++;
                 }
-                else if (p1.y == p2.y) {
-                    if (!hHash.containsKey(p1.y)) {
-                        hHash.put(p1.y, new HashSet<Point>());
+                else if (y.x == x.x) {
+                    if (!hash.containsKey(Float.MAX_VALUE)) {
+                        hash.put(Float.MAX_VALUE, 0);
                     }
-
-                    Set<Point> p1Set = hHash.get(p1.y);
-                    p1Set.add(p1);
-                    p1Set.add(p2);
-
-                    max = Math.max(max, p1Set.size());
+                    hash.put(Float.MAX_VALUE, hash.get(Float.MAX_VALUE) + 1);
+                }
+                else if (y.y == x.y) {
+                    if (!hash.containsKey((float)0)) {
+                        hash.put((float)0, 0);
+                    }
+                    hash.put((float)0, hash.get((float)0) + 1);
                 }
                 else {
-                    float angle = (p2.y - p1.y) / (float)(p2.x - p1.x);
-                    if (!hash.containsKey(angle)) {
-                        hash.put(angle, new HashSet<Point>());
+                    float slp = (float)(y.y - x.y) / (float)(y.x - x.x);
+
+                    if (!hash.containsKey(slp)) {
+                        hash.put(slp, 0);
                     }
-
-                    Set<Point> p1Set = hash.get(angle);
-                    p1Set.add(p1);
-                    p1Set.add(p2);
-
-                    max = Math.max(max, p1Set.size());
+                    hash.put(slp, hash.get(slp) + 1);
                 }
             }
+            int localMax = 0;
+            for (int lines : hash.values()) {
+                localMax = Math.max(localMax, lines);
+            }
+            localMax += same;
+            max = Math.max(localMax, max);
         }
+
 
         return max;
     }
 
     public static void main(String[] args) {
-        int[][] pointsVals = {{0,-12},{5,2},{2,5},{0,-5},{1,5},{2,-2},{5,-4},{3,4},{-2,4},{-1,4},{0,-5},{0,-8},{-2,-1},{0,-11},{0,-9}};
+        //int[][] pointsVals = {{0,-12},{5,2},{2,5},{0,-5},{1,5},{2,-2},{5,-4},{3,4},{-2,4},{-1,4},{0,-5},{0,-8},{-2,-1},{0,-11},{0,-9}};
+        int[][] pointsVals = {{2, 3}, {3, 3}, {-5, 3}};
         Point[] points = new Point[pointsVals.length];
         for (int i = 0; i < pointsVals.length; i++) {
             points[i] = new Point(pointsVals[i][0], pointsVals[i][1]);
