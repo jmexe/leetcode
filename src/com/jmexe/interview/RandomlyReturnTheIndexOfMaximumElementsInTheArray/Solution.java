@@ -33,7 +33,7 @@ public class Solution {
 
     public static void main(String[] args) {
 
-        Map<Integer, Integer> hash = new HashMap<>();
+        Map<Integer, Integer> hash = new HashMap<Integer, Integer>();
         int[] nums = {1, 1, 2, 3, 3, 3, 3, 2};
         int t = 1000;
         while (t-- > 0) {
