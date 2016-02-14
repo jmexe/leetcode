@@ -8,23 +8,32 @@ import java.util.Queue;
  */
 public class Solution {
     public static void wallsAndGates(int[][] rooms) {
-        int m = rooms.length, n = rooms[0].length;
-        int[][] directs = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+        if (rooms == null || rooms.length == 0 || rooms[0].length == 0) {
+            return;
+        }
+        int[][] directs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int rowN = rooms.length;
+        int colN = rooms[0].length;
+
         Queue<Integer> q = new LinkedList<Integer>();
-        for (int i = 0; i < m * n; i++) {
-            if (rooms[i / n][i % n] == 0) {
-                q.offer(i);
+
+        for (int i = 0; i < rowN; i++) {
+            for (int j = 0; j < colN; j++) {
+                if (rooms[i][j] == 0) {
+                    q.offer(i * colN + j);
+                }
             }
         }
 
         while (!q.isEmpty()) {
             int pos = q.poll();
-            int row = pos / n, col = pos % n;
-            for (int[] direct : directs) {
-                if (row + direct[0] >= 0 && row + direct[0] < m && col + direct[1] >= 0 && col + direct[1] < n && rooms[row + direct[0]][col + direct[1]] == Integer.MAX_VALUE) {
-                    rooms[row + direct[0]][col + direct[1]] = rooms[row][col] + 1;
+            int row = pos / colN;
+            int col = pos % colN;
 
-                    q.offer((row + direct[0]) * n + col + direct[1]);
+            for (int[] direct : directs) {
+                if (row + direct[0] >= 0 && row + direct[0] < rowN && col + direct[1] >= 0 && col + direct[1] < colN && rooms[row + direct[0]][col + direct[1]] == Integer.MAX_VALUE) {
+                    rooms[row + direct[0]][col + direct[1]] = Math.min(rooms[row][col] + 1, rooms[row + direct[0]][col + direct[1]]);
+                    q.offer(pos + direct[0] * colN + direct[1]);
                 }
             }
         }

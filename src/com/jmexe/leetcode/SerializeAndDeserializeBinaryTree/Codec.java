@@ -1,5 +1,6 @@
 package com.jmexe.leetcode.SerializeAndDeserializeBinaryTree;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -22,58 +23,51 @@ public class Codec {
 
 
     // Encodes a tree to a single string.
-    public static String serialize(TreeNode root) {
+    public String serialize(TreeNode root) {
+        return buildString(root, "");
+    }
+
+    public String buildString(TreeNode root, String ans) {
         if (root == null) {
-            return "";
+            ans += ",#";
+            return ans;
         }
 
-        Queue<TreeNode> q = new LinkedList<TreeNode>();
-        q.offer(root);
-        String ans = "";
-        while (!q.isEmpty()) {
-            TreeNode node = q.poll();
-            if (node == null) {
-                ans += ",#";
-                continue;
-            }
-
-            ans += "," + node.val;
-
-            if (q.isEmpty() && node.left == null && node.right == null) {
-                break;
-            }
-            q.offer(node.left);
-            q.offer(node.right);
+        if (ans.equals("")) {
+            ans = "" + root.val;
+        }
+        else {
+            ans += "," + root.val;
         }
 
-        return ans.substring(1);
+        ans = buildString(root.left, ans);
+        ans = buildString(root.right, ans);
+
+        return ans;
     }
 
     // Decodes your encoded data to tree.
-    public static TreeNode deserialize(String data) {
+    public TreeNode deserialize(String data) {
         if (data == null || data.equals("")) {
             return null;
         }
 
-        String[] vals = data.split(",");
-        TreeNode root = new TreeNode(Integer.parseInt(vals[0]));
-        Queue<TreeNode> q = new LinkedList<TreeNode>();
-        q.offer(root);
-        int i = 0;
+        String[] tokens = data.split(",");
+        Queue<String> q = new LinkedList<String>();
+        q.addAll(Arrays.asList(tokens));
 
-        while(!q.isEmpty()) {
-            TreeNode node = q.poll();
+        return buildTree(q);
+    }
 
-            if (++i < vals.length && !vals[i].equals("#")) {
-                node.left = new TreeNode(Integer.parseInt(vals[i]));
-                q.offer(node.left);
-            }
-
-            if (++i < vals.length && !vals[i].equals("#")) {
-                node.right = new TreeNode(Integer.parseInt(vals[i]));
-                q.offer(node.right);
-            }
+    public TreeNode buildTree(Queue<String> q) {
+        String val = q.poll();
+        if (val.equals("#")) {
+            return null;
         }
+
+        TreeNode root = new TreeNode(Integer.parseInt(val));
+        root.left = buildTree(q);
+        root.right = buildTree(q);
 
         return root;
     }
@@ -83,7 +77,10 @@ public class Codec {
         root.left = new TreeNode(-1);
         root.right = new TreeNode(2);
         root.right.left = new TreeNode(3);
-        System.out.println(serialize(deserialize(serialize(root))));
+
+        Codec codec = new Codec();
+
+        System.out.println(codec.serialize(codec.deserialize(codec.serialize(root))));
     }
 
 }
