@@ -10,58 +10,53 @@ public class Solution {
 
     public static void buildGraph(String[] words) {
         for (int i = 0; i < words.length; i++) {
-            boolean match = true;
+            boolean same = true;
             for (int j = 0; j < words[i].length(); j++) {
                 if (!graph.containsKey(words[i].charAt(j))) {
                     graph.put(words[i].charAt(j), new LinkedList<Character>());
                 }
 
-                if (i > 0 && match && j < words[i - 1].length() && words[i - 1].charAt(j) != words[i].charAt(j)) {
+                if (i > 0 && same && words[i - 1].length() > j && words[i - 1].charAt(j) != words[i].charAt(j)) {
                     graph.get(words[i - 1].charAt(j)).add(words[i].charAt(j));
-                    match = false;
+                    same = false;
                 }
             }
+
         }
     }
 
-    public static boolean tpSort(boolean[] visited, boolean[] instack, char c, Stack<Character> stack) {
-        visited[c - 'a'] = true;
-
-        Iterator<Character> it = graph.get(c).iterator();
-
-        while (it.hasNext()) {
-            char next = it.next();
-            if (visited[next - 'a'] && !instack[next - 'a']) {
-                return false;
-            }
-            if (!visited[next - 'a']) {
-                if( !tpSort(visited, instack, next, stack)) {
-                    return false;
-                }
-            }
+    public static boolean tpSort(boolean[] visited, char c, Stack<Character> stack) {
+        if (visited[c - 'a']) {
+            return true;
         }
 
+        visited[c - 'a'] = true;
+        Iterator<Character> itr = graph.get(c).iterator();
+
+        while (itr.hasNext()) {
+            char next = itr.next();
+
+            if ((visited[next - 'a'] && !stack.contains(next)) || !tpSort(visited, next, stack)) {
+                return false;
+            }
+        }
         stack.push(c);
-        instack[c - 'a'] = true;
         return true;
     }
 
     public static String alienOrder(String[] words) {
 
         buildGraph(words);
-
         boolean[] visited = new boolean[26];
-        boolean[] instack = new boolean[26];
         Stack<Character> stack = new Stack<Character>();
         for (char c : graph.keySet()) {
-            if (!visited[c - 'a']) {
-                boolean valid = tpSort(visited, instack, c, stack);
-                if (!valid) {
-                    return "";
-                }
+            if (!visited[c - 'a'] && !tpSort(visited, c, stack)) {
+                return "";
             }
         }
+
         String ans = "";
+
         while (!stack.isEmpty()) {
             ans += stack.pop();
         }
@@ -71,7 +66,7 @@ public class Solution {
 
     public static void main(String[] args) {
         //String[] words = {"wrt","wrf","er","ett","rftt"};
-        String[] words = {"a", "b", "a"};
+        String[] words = {"wrt","wrf","er","ett","rftt"};
         System.out.println(alienOrder(words));
     }
 
