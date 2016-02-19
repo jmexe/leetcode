@@ -33,6 +33,6 @@ public class Solution {
     }
 
     public static void main(String[] args) {
-        System.out.println(minWindow("a", "aa"));
+        System.out.println(minWindow("cabwefgewcwaefgcf", "cae"));
     }
 }
